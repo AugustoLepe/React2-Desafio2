@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import "./styles.css";
 
-function App() {
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MyContext from "./components/MyContext";
+import Navbar from "./components/Navbar";
+import { useState, useEffect } from "react";
+
+import Home from "./views/Home";
+import Favoritos from "./views/Favoritos";
+
+
+export default function App() {
+  const endpoint = "/fotos.json";
+  const [data, setData] = useState([]);
+  const estados = { data, setData }
+
+  useEffect(() => {
+    consultaApi()
+  }, [])
+
+  const consultaApi = async () => {
+    const response = await fetch(endpoint);
+    const photosApi = await response.json()
+    setData(photosApi.photos)
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <MyContext.Provider value={estados}>
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/favoritos" element={<Favoritos />} />
+          </Routes>
+        </BrowserRouter>
+      </MyContext.Provider>
     </div>
   );
 }
-
-export default App;
